@@ -13,8 +13,8 @@ struct AppBackdrop: View {
         ZStack {
             LinearGradient(
                 colors: backgroundColors,
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                startPoint: .bottom,
+                endPoint: .top
             )
 
             Circle()
@@ -33,8 +33,8 @@ struct AppBackdrop: View {
 
     private var backgroundColors: [Color] {
         colorScheme == .dark
-            ? [Color(red: 0.05, green: 0.06, blue: 0.09), Color(red: 0.07, green: 0.08, blue: 0.11), Color(red: 0.03, green: 0.04, blue: 0.06)]
-            : [Color(red: 0.97, green: 0.98, blue: 0.99), Color.white, Color(red: 0.94, green: 0.95, blue: 0.97)]
+            ? [Color(hex: "09637E") ?? .black, Color(hex: "088395") ?? .teal]
+            : [Color(hex: "EBF4F6") ?? .white, Color(hex: "7AB2B2") ?? .teal]
     }
 }
 
@@ -82,7 +82,7 @@ struct BalanceHeroCard: View {
                     .foregroundStyle(.black.opacity(0.65))
 
                 Text(store.formattedCurrency(snapshot.balance))
-                    .font(.system(size: 42, weight: .bold, design: .rounded))
+                    .font(.system(size: 42, weight: .bold))
                     .foregroundStyle(.black)
                     .contentTransition(.numericText())
 
@@ -395,7 +395,7 @@ struct FirstRunHomeCard: View {
                     .foregroundStyle(.secondary)
 
                 Text("Start with your first transaction")
-                    .font(.system(.title2, design: .rounded, weight: .bold))
+                    .font(.system(.title2, weight: .bold))
 
                 Text("You won’t see balances, charts, or summaries until you add real activity. Begin with one income or one expense and the app will build the month around your actual data.")
                     .foregroundStyle(.secondary)
@@ -416,7 +416,7 @@ struct FirstRunHomeCard: View {
                         .padding(.vertical, 15)
                         .background(
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .fill(Color(red: 0.26, green: 0.33, blue: 0.44))
+                                .fill(Color.accentColor)
                         )
                 }
                 .buttonStyle(.plain)
@@ -475,9 +475,10 @@ struct AddTransactionButton: View {
         Button(action: action) {
             Image(systemName: "plus")
                 .font(.title2.bold())
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 62, height: 62)
-                .background(.white, in: Circle())
+                .background(.ultraThinMaterial, in: Circle())
+                .overlay(Circle().strokeBorder(.white.opacity(0.12), lineWidth: 1))
                 .shadow(color: .black.opacity(0.18), radius: 24, y: 8)
         }
         .buttonStyle(.plain)
