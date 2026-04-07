@@ -1,6 +1,7 @@
 {
   "images" : [
     {
+      "filename" : "ExpenseDiaryIcon.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
@@ -12,6 +13,7 @@
           "value" : "dark"
         }
       ],
+      "filename" : "ExpenseDiaryDarkIcon.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
