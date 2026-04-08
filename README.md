@@ -6,7 +6,7 @@ ExpenseTracker is a premium, Apple-first finance management application built wi
 
 ## 📱 Screenshots
 
-| Home & Card | Transactions | Insights | Profile |
+| Home | Transactions | Insights | Profile |
 | :---: | :---: | :---: | :---: |
 | ![Home](screenshots/home_card.png) | ![Transactions](screenshots/transactions.png) | ![Insights](screenshots/insights.png) | ![Profile](screenshots/profile.png) |
 
