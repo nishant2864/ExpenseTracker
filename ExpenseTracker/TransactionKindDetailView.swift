@@ -97,7 +97,7 @@ struct TransactionKindDetailView: View {
                         .background(.ultraThinMaterial, in: Capsule())
                 }
 
-                Divider().opacity(0.4)
+
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Total \(title)")
@@ -120,16 +120,9 @@ struct TransactionKindDetailView: View {
                 .font(.title3.bold())
                 .padding(.horizontal, 4)
 
-            VStack(spacing: 0) {
+            VStack(spacing: 8) {
                 ForEach(items) { item in
                     TransactionRow(item: item, formattedAmount: store.formattedCurrency(item.amount))
-                        .padding(.vertical, 4)
-
-                    if item.id != items.last?.id {
-                        Divider()
-                            .opacity(0.25)
-                            .padding(.leading, 56)
-                    }
                 }
             }
         }
