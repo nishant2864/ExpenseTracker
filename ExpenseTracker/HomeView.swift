@@ -5,13 +5,20 @@ struct HomeView: View {
     let namespace: Namespace.ID
     let onAddTransaction: () -> Void
 
+    @State private var showingIncome = false
+    @State private var showingExpenses = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 header
                 if store.hasTransactions {
                     ATMCardView(snapshot: store.monthlySnapshot, namespace: namespace)
-                    QuickStatsRow(snapshot: store.monthlySnapshot)
+                    QuickStatsRow(
+                        snapshot: store.monthlySnapshot,
+                        onIncomeTap: { showingIncome = true },
+                        onExpenseTap: { showingExpenses = true }
+                    )
                     SpendingChartCard(items: store.monthlyTotalsByCategory(kind: .expense), formatter: store.formattedCurrency)
                     recentSection
                 } else {
@@ -33,7 +40,6 @@ struct HomeView: View {
                     )
                 )
             }
-            
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink(destination: ProfileView()) {
                     Image(systemName: "person.crop.circle")
@@ -42,7 +48,19 @@ struct HomeView: View {
                 }
             }
         }
+        // Income detail sheet
+        .sheet(isPresented: $showingIncome) {
+            TransactionKindDetailView(kind: .income)
+                .environmentObject(store)
+        }
+        // Expenses detail sheet
+        .sheet(isPresented: $showingExpenses) {
+            TransactionKindDetailView(kind: .expense)
+                .environmentObject(store)
+        }
     }
+
+    // MARK: - Header
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -52,18 +70,17 @@ struct HomeView: View {
                         .font(.system(.largeTitle, weight: .bold))
                     Text("\(store.userDisplayName)")
                         .font(.system(.largeTitle, weight: .bold))
-                    
                     Spacer()
-                    
                     Text("Your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))")
                         .foregroundStyle(.secondary)
                 }
-
                 Spacer()
             }
             .contentTransition(.numericText())
         }
     }
+
+    // MARK: - Recent section
 
     private var recentSection: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -84,20 +101,14 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Greeting
+
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: .now)
-        let timeGreeting = switch hour {
+        return switch hour {
         case 5..<12: "Good Morning"
         case 12..<17: "Good Afternoon"
         default: "Good Evening"
         }
-        return timeGreeting
-    }
-
-    private var greetingSubtitle: String {
-        let name = store.userDisplayName
-        return name == "Friend"
-            ? "Your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))"
-            : "Hi \(name), your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))"
     }
 }

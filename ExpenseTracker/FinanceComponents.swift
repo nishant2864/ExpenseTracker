@@ -461,6 +461,8 @@ private struct CardBackFace: View {
 
 struct QuickStatsRow: View {
     let snapshot: MonthlySnapshot
+    var onIncomeTap: (() -> Void)? = nil
+    var onExpenseTap: (() -> Void)? = nil
     @EnvironmentObject private var store: FinanceStore
 
     var body: some View {
@@ -469,13 +471,15 @@ struct QuickStatsRow: View {
                 title: "Income",
                 value: store.formattedCurrency(snapshot.income),
                 systemImage: "arrow.down.left.circle.fill",
-                tint: .green
+                tint: .green,
+                onTap: onIncomeTap
             )
             StatCard(
                 title: "Expenses",
                 value: store.formattedCurrency(snapshot.expenses),
                 systemImage: "arrow.up.right.circle.fill",
-                tint: .red
+                tint: .red,
+                onTap: onExpenseTap
             )
         }
     }
@@ -486,21 +490,28 @@ struct StatCard: View {
     let value: String
     let systemImage: String
     let tint: Color
+    var onTap: (() -> Void)? = nil
 
     var body: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: 12) {
-                Image(systemName: systemImage)
-                    .font(.title2)
-                    .foregroundStyle(tint)
-                Text(title)
-                    .foregroundStyle(.secondary)
-                Text(value)
-                    .font(.title3.bold())
-                    .contentTransition(.numericText())
+        Button {
+            onTap?()
+        } label: {
+            GlassCard {
+                VStack(alignment: .leading, spacing: 12) {
+                    Image(systemName: systemImage)
+                        .font(.title2)
+                        .foregroundStyle(tint)
+                    Text(title)
+                        .foregroundStyle(.secondary)
+                    Text(value)
+                        .font(.title3.bold())
+                        .contentTransition(.numericText())
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .buttonStyle(.plain)
+        .disabled(onTap == nil)
     }
 }
 
