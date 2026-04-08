@@ -3,34 +3,30 @@ import SwiftUI
 // MARK: - Onboarding Page Model
 
 struct OnboardingPage {
-    let systemImage: String
+    let imageName: String
     let gradientColors: [Color]
     let title: String
     let subtitle: String
-    let accentNote: String
 }
 
 private let onboardingPages: [OnboardingPage] = [
     OnboardingPage(
-        systemImage: "chart.bar.fill",
+        imageName: "HomeTab",
         gradientColors: [Color(hex: "4F8EF7") ?? .blue, Color(hex: "2D5BA3") ?? .blue],
         title: "Know Where Your Money Goes",
-        subtitle: "Track every rupee with smart categories. See exactly what you spend on food, travel, bills, and more — all in one clean dashboard.",
-        accentNote: "Visual breakdowns, monthly at a glance"
+        subtitle: "Track every rupee with smart categories. See exactly what you spend on food, travel, bills, and more — all in one clean dashboard."
     ),
     OnboardingPage(
-        systemImage: "arrow.left.arrow.right.circle.fill",
+        imageName: "AddTransactionsScreen",
         gradientColors: [Color(hex: "6E44C8") ?? .purple, Color(hex: "9B59B6") ?? .purple],
         title: "Log Income & Expenses Instantly",
-        subtitle: "Add transactions in seconds. Whether it's a salary deposit or a coffee run, every entry builds a clearer picture of your finances.",
-        accentNote: "Fast entry, zero friction"
+        subtitle: "Add transactions in seconds. Whether it's a salary deposit or a coffee run, every entry builds a clearer picture of your finances."
     ),
     OnboardingPage(
-        systemImage: "sparkles",
+        imageName: "InsightsTab",
         gradientColors: [Color(hex: "2EC4B6") ?? .teal, Color(hex: "1A8F85") ?? .teal],
-        title: "Insights That Actually Helpul",
-        subtitle: "Monthly summaries, spending rings, and category charts so you always know if this month is healthy — before it ends.",
-        accentNote: "Real data. No mock numbers."
+        title: "Insights That Actually Helps",
+        subtitle: "Monthly summaries, spending rings, and category charts so you always know if this month is healthy — before it ends."
     )
 ]
 
@@ -122,23 +118,9 @@ struct OnboardingPageView: View {
                     .frame(width: 200, height: 200)
                     .blur(radius: 40)
 
-                ZStack {
-                    RoundedRectangle(cornerRadius: 36, style: .continuous)
-                        .fill(
-                            LinearGradient(
-                                colors: page.gradientColors,
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                        .frame(width: 120, height: 120)
-                        .shadow(color: page.gradientColors.first?.opacity(0.45) ?? .clear, radius: 30, y: 14)
-
-                    Image(systemName: page.systemImage)
-                        .font(.system(size: 46, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .symbolEffect(.bounce, value: appeared)
-                }
+                Image(page.imageName)
+                    .resizable()
+                    .scaledToFit()
             }
             .scaleEffect(appeared ? 1 : 0.7)
             .opacity(appeared ? 1 : 0)
@@ -164,19 +146,7 @@ struct OnboardingPageView: View {
                     .opacity(appeared ? 1 : 0)
                     .animation(.spring(duration: 0.6).delay(0.3), value: appeared)
 
-                HStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                    Text(page.accentNote)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(.ultraThinMaterial, in: Capsule())
-                .offset(y: appeared ? 0 : 20)
-                .opacity(appeared ? 1 : 0)
-                .animation(.spring(duration: 0.6).delay(0.4), value: appeared)
+
             }
             .padding(.horizontal, 28)
 
