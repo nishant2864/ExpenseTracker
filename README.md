@@ -54,12 +54,4 @@ ExpenseTracker is a premium, Apple-first finance management application built wi
 
 ---
 
-## 📝 Notes
-
-- **Initial Data**: On first launch, the app populates sample data to give you an immediate look at how your records will appear.
-- **Glass Effects**: Full liquid glass effects require iOS 17+. On older versions, a high-quality fallback stroke/fill is applied.
-- **Haptics**: The app uses `UIImpactFeedbackGenerator` for premium tactile feedback during card flipping and generation.
-
----
-
 Designed with ❤️ for a modern financial life.
