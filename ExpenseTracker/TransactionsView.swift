@@ -33,6 +33,7 @@ struct TransactionsView: View {
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                 }
+                .padding(.horizontal)
             } else {
                 ForEach(groupedTransactions, id: \.date) { section in
                     Section(section.date.formatted(.dateTime.weekday(.wide).day().month())) {
