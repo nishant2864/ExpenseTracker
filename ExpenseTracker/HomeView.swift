@@ -7,6 +7,7 @@ struct HomeView: View {
 
     @State private var showingIncome = false
     @State private var showingExpenses = false
+    @State private var showingAllActivity = false
 
     var body: some View {
         ScrollView {
@@ -19,7 +20,10 @@ struct HomeView: View {
                         onIncomeTap: { showingIncome = true },
                         onExpenseTap: { showingExpenses = true }
                     )
-                    SpendingChartCard(items: store.monthlyTotalsByCategory(kind: .expense), formatter: store.formattedCurrency)
+                    SpendingChartCard(
+                        items: store.monthlyTotalsByCategory(kind: .expense),
+                        formatter: store.formattedCurrency
+                    )
                     recentSection
                 } else {
                     FirstRunHomeCard(action: onAddTransaction)
@@ -27,7 +31,7 @@ struct HomeView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 12)
-            .padding(.bottom, 120)
+            .padding(.bottom, 40)
         }
         .background(AppBackdrop().ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
@@ -48,14 +52,16 @@ struct HomeView: View {
                 }
             }
         }
-        // Income detail sheet
         .sheet(isPresented: $showingIncome) {
             TransactionKindDetailView(kind: .income)
                 .environmentObject(store)
         }
-        // Expenses detail sheet
         .sheet(isPresented: $showingExpenses) {
             TransactionKindDetailView(kind: .expense)
+                .environmentObject(store)
+        }
+        .sheet(isPresented: $showingAllActivity) {
+            AllRecentActivityView()
                 .environmentObject(store)
         }
     }
@@ -80,12 +86,33 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Recent section
+    // MARK: - Recent section (last 3)
 
     private var recentSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Recent activity")
-                .font(.title3.bold())
+
+            // Section header with See all button
+            HStack(alignment: .center) {
+                Text("Recent activity")
+                    .font(.title3.bold())
+
+                Spacer()
+
+                if !store.recentTransactions.isEmpty {
+                    Button {
+                        showingAllActivity = true
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text("See all")
+                                .font(.subheadline.weight(.medium))
+                            Image(systemName: "chevron.right")
+                                .font(.caption.weight(.semibold))
+                        }
+                        .foregroundStyle(Color.accentColor)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
 
             if store.recentTransactions.isEmpty {
                 EmptyStateCard(
@@ -94,7 +121,7 @@ struct HomeView: View {
                     systemImage: "tray.fill"
                 )
             } else {
-                ForEach(store.recentTransactions) { item in
+                ForEach(Array(store.recentTransactions.prefix(3))) { item in
                     TransactionRow(item: item, formattedAmount: store.formattedCurrency(item.amount))
                 }
             }

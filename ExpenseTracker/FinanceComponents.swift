@@ -520,10 +520,10 @@ struct SpendingChartCard: View {
     let formatter: (Double) -> String
 
     var body: some View {
-        GlassCard {
             VStack(alignment: .leading, spacing: 18) {
                 Text("This month’s spending")
                     .font(.title3.bold())
+                    .padding(.top, 20)
 
                 if items.isEmpty {
                     EmptyStateCard(
@@ -561,8 +561,8 @@ struct SpendingChartCard: View {
                         }
                     }
                 }
-            }
         }
+                    .padding(.bottom, 30)
     }
 }
 
