@@ -219,10 +219,8 @@ struct UserSetupView: View {
             AppBackdrop().ignoresSafeArea()
 
             VStack(spacing: 0) {
-                // Step progress bar
                 setupProgressBar
 
-                // Step content
                 Group {
                     switch step {
                     case .name:
@@ -426,6 +424,7 @@ struct SetupStepWrapper<Fields: View>: View {
             .padding(.top, 20)
             .padding(.bottom, 40)
         }
+        .scrollIndicators(.hidden)
         .safeAreaInset(edge: .bottom) {
             PrimaryButton(title: nextLabel, action: onNext)
                 .padding(.horizontal, 28)
@@ -474,7 +473,7 @@ struct SetupTextField: View {
     }
 }
 
-// MARK: - First Run Inline Card (setup step 3)
+// MARK: - First Run Inline Card
 
 struct FirstRunInlineCard: View {
     @EnvironmentObject private var store: FinanceStore
@@ -507,7 +506,7 @@ struct FirstRunInlineCard: View {
     }
 }
 
-// MARK: - Card Setup Step (Step 4)
+// MARK: - Card Setup Step
 
 struct CardSetupStepView: View {
     @EnvironmentObject private var store: FinanceStore
@@ -521,8 +520,6 @@ struct CardSetupStepView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
-
-                // ── Header icon + title ──────────────────────────────
                 VStack(alignment: .leading, spacing: 10) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -562,7 +559,6 @@ struct CardSetupStepView: View {
 
                 Spacer().frame(height: 28)
 
-                // ── Mini card preview ────────────────────────────────
                 ZStack {
                     miniCardFront
                         .opacity(isFlipped ? 0 : 1)
@@ -606,7 +602,6 @@ struct CardSetupStepView: View {
 
                 Spacer().frame(height: 24)
 
-                // ── Feature bullets ──────────────────────────────────
                 VStack(alignment: .leading, spacing: 0) {
                     featureBullet(
                         icon: "person.text.rectangle.fill",
@@ -641,7 +636,6 @@ struct CardSetupStepView: View {
 
                 Spacer().frame(height: 18)
 
-                // ── ⚠️ Disclaimer ─────────────────────────────────────
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.body)
@@ -672,10 +666,10 @@ struct CardSetupStepView: View {
                 Spacer().frame(height: 100)
             }
         }
+        .scrollIndicators(.hidden)
         .safeAreaInset(edge: .bottom) {
             VStack(spacing: 10) {
                 if !cardGenerated && !store.cardGenerated {
-                    // Generate button
                     Button {
                         UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
                         store.generateCard()

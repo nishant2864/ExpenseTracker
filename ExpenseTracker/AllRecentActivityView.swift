@@ -51,6 +51,7 @@ struct AllRecentActivityView: View {
 
     private var transactionList: some View {
         ScrollView {
+
             LazyVStack(alignment: .leading, spacing: 24, pinnedViews: .sectionHeaders) {
                 ForEach(groupedByDay, id: \.date) { group in
                     Section {
@@ -78,6 +79,7 @@ struct AllRecentActivityView: View {
             .padding(.top, 8)
             .padding(.bottom, 40)
         }
+        .scrollIndicators(.hidden)
     }
 
     // MARK: - Day header

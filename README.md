@@ -1,40 +1,65 @@
 # ExpenseTracker
 
-ExpenseTracker is an iOS SwiftUI finance manager built with a native Apple-first feel: gradient balance surfaces, glass cards, animated summaries, category tracking, and persistent local storage for monthly budgeting.
+ExpenseTracker is a premium, Apple-first finance management application built with SwiftUI. It delivers a high-quality experience with liquid glass surfaces, vibrant gradients, and smooth native animations to make tracking your monthly budget feel elegant and effortless.
 
-## Features
+---
 
-- Add income and expenses with validation
-- Track spending by category with predefined and custom categories
-- Monthly summary for income, expenses, and remaining balance
-- Bottom tab navigation for Home, Transactions, Insights, and Profile
-- Light, dark, and system appearance modes
-- Apple-style motion, charts, and glass surfaces where supported
-- Local JSON persistence in the app documents directory
+## 📱 Screenshots
 
-## Tech
+| Home & Card | Transactions | Insights | Profile |
+| :---: | :---: | :---: | :---: |
+| ![Home](screenshots/home_card.png) | ![Transactions](screenshots/transactions.png) | ![Insights](screenshots/insights.png) | ![Profile](screenshots/profile.png) |
 
-- SwiftUI
-- Charts
-- Observation
-- Local file storage using `JSONEncoder` / `JSONDecoder`
+---
 
-## Run
+## ✨ Features
 
-1. Open `ExpenseTracker.xcodeproj` in Xcode 26 or newer.
-2. Select an iPhone simulator running iOS 26.0 or later for full glass styling support.
-3. Build and run the `ExpenseTracker` scheme.
+- **Liquid Glass Design**: A modern fintech aesthetic using `ultraThinMaterial`, custom glassmorphism effects, and sleek gradients.
+- **Virtual Tracking Card**: A personalized, draggable, and flippable ATM card that doubles as a quick balance summary.
+- **Card Lifecycle Management**: Generate your unique tracking card from your profile or onboarding, and destroy/regenerate it anytime.
+- **Search & Filter**: Real-time transaction search with a clean, native search bar integrated below navigation headers.
+- **Smart Insights**: Category-based spending breakdowns and monthly snapshot summaries with interactive charts.
+- **Profile Management**: Customize your profile with a high-resolution avatar (Camera/Photos) and personal information.
+- **Native Experience**: No scroll indicators for a cleaner "app-like" feel, full dark/light mode support, and Apple HIG-compliant interactions.
+- **Persistence**: All data is stored locally on-device using JSON persistence for privacy and speed.
 
-## Structure
+---
 
-- `ExpenseTracker/ExpenseTrackerApp.swift`: app entry and shared store
-- `ExpenseTracker/FinanceModels.swift`: models, categories, and appearance types
-- `ExpenseTracker/FinanceStore.swift`: persistence, monthly aggregation, and state
-- `ExpenseTracker/ContentView.swift`: tab shell and screen composition
-- `ExpenseTracker/FinanceComponents.swift`: reusable UI surfaces and cards
+## 🛠 Setup Instructions
 
-## Notes
+### Prerequisites
+- **macOS Sonoma** or later.
+- **Xcode 15.0** or later.
+- **iOS 17.0+** (Physical device or Simulator).
 
-- The app seeds sample data on first launch so the UI is populated immediately.
-- The `glassEffect(_:in:)` modifier is conditionally applied on supported OS versions.
-- Screenshots and release artifacts can be added after building from Xcode or App Store Connect/TestFlight export flows.
+### Installation
+1. **Clone the project** or download the source code.
+2. **Open the project**:
+   ```bash
+   open ExpenseTracker.xcodeproj
+   ```
+3. **Select a Target**: Choose an iPhone simulator (e.g., iPhone 15 Pro) or your connected physical device.
+4. **Build and Run**: Press `⌘ + R` or click the play button in Xcode.
+
+---
+
+## 📂 Project Structure
+
+- **`HomeView.swift`**: The main dashboard featuring the balance card and recent activity.
+- **`FinanceStore.swift`**: The centralized engine managing state, persistence, and business logic.
+- **`FinanceComponents.swift`**: The UI library containing glass modifiers, stat cards, and the animated ATM card.
+- **`TransactionsView.swift`**: Full history management with integrated search.
+- **`ProfileView.swift`**: User settings and card management hub.
+- **`InsightsView.swift`**: Visual data interpretation and category distribution.
+
+---
+
+## 📝 Notes
+
+- **Initial Data**: On first launch, the app populates sample data to give you an immediate look at how your records will appear.
+- **Glass Effects**: Full liquid glass effects require iOS 17+. On older versions, a high-quality fallback stroke/fill is applied.
+- **Haptics**: The app uses `UIImpactFeedbackGenerator` for premium tactile feedback during card flipping and generation.
+
+---
+
+Designed with ❤️ for a modern financial life.

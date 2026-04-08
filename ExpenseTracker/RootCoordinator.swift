@@ -65,7 +65,7 @@ struct RootCoordinator: View {
     }
 }
 
-// MARK: - Main App View (existing TabView content)
+// MARK: - Main App View 
 
 struct MainAppView: View {
     @EnvironmentObject private var store: FinanceStore

@@ -6,6 +6,7 @@ struct InsightsView: View {
 
     var body: some View {
         ScrollView {
+
             VStack(spacing: 20) {
                 if store.hasTransactions {
                     SummaryRingCard(snapshot: store.monthlySnapshot, formatter: store.formattedCurrency, animationTrigger: animationTrigger)
@@ -20,8 +21,9 @@ struct InsightsView: View {
                 }
             }
             .padding(20)
-            .padding(.bottom, 120)
+            .padding(.bottom, 40)
         }
+        .scrollIndicators(.hidden)
         .background(AppBackdrop().ignoresSafeArea())
         .navigationTitle("Insights")
         .onAppear {

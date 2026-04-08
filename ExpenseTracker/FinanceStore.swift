@@ -6,6 +6,7 @@
 import Combine
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 final class FinanceStore: ObservableObject {
@@ -18,6 +19,7 @@ final class FinanceStore: ObservableObject {
     @Published var userLastName: String = ""
     @Published var userEmail: String = ""
     @Published var userPhone: String = ""
+    @Published var profileImageData: Data? = nil
 
     // Onboarding state
     @Published var hasCompletedOnboarding: Bool = false
@@ -33,6 +35,7 @@ final class FinanceStore: ObservableObject {
     private let userNameKey = "finance.app.userName"
     private let userContactKey = "finance.app.userContact"
     private let cardKey = "finance.app.card"
+    private let profileImageKey = "finance.app.profileImage"
 
     init() {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first ?? URL.documentsDirectory
@@ -65,6 +68,15 @@ final class FinanceStore: ObservableObject {
         UserDefaults.standard.set(dict, forKey: userContactKey)
     }
 
+    func saveProfileImage(_ data: Data?) {
+        profileImageData = data
+        if let data {
+            UserDefaults.standard.set(data, forKey: profileImageKey)
+        } else {
+            UserDefaults.standard.removeObject(forKey: profileImageKey)
+        }
+    }
+
     func completeOnboarding() {
         hasCompletedOnboarding = true
         UserDefaults.standard.set(true, forKey: onboardingKey)
@@ -72,15 +84,20 @@ final class FinanceStore: ObservableObject {
 
     func generateCard() {
         guard !cardGenerated else { return }
-        // Generate a random 16-digit card number grouped in 4
         let digits = (0..<16).map { _ in String(Int.random(in: 0...9)) }.joined()
         let groups = stride(from: 0, to: 16, by: 4).map {
             String(digits[digits.index(digits.startIndex, offsetBy: $0)..<digits.index(digits.startIndex, offsetBy: $0 + 4)])
         }
         cardNumber = groups.joined(separator: " ")
         cardGenerated = true
-        var dict: [String: Any] = ["number": cardNumber, "generated": true]
+        let dict: [String: Any] = ["number": cardNumber, "generated": true]
         UserDefaults.standard.set(dict, forKey: cardKey)
+    }
+
+    func destroyCard() {
+        cardNumber = ""
+        cardGenerated = false
+        UserDefaults.standard.removeObject(forKey: cardKey)
     }
 
     /// Last 4 digits of the card number
@@ -190,6 +207,7 @@ final class FinanceStore: ObservableObject {
             userEmail = contactDict["email"] as? String ?? ""
             userPhone = contactDict["phone"] as? String ?? ""
         }
+        profileImageData = UserDefaults.standard.data(forKey: profileImageKey)
         if let cardDict = UserDefaults.standard.dictionary(forKey: cardKey) {
             cardNumber = cardDict["number"] as? String ?? ""
             cardGenerated = cardDict["generated"] as? Bool ?? false

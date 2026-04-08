@@ -2,7 +2,6 @@
 //  ContentView.swift
 //  ExpenseTracker
 //
-//  Legacy file — entry point is now RootCoordinator.swift
 //
 
 import SwiftUI

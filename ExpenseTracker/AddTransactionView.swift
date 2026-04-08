@@ -25,6 +25,7 @@ struct AddTransactionView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
+
                 VStack(alignment: .leading, spacing: 22) {
                     header
                     kindPicker
@@ -37,6 +38,7 @@ struct AddTransactionView: View {
                 .padding(20)
                 .padding(.bottom, 30)
             }
+            .scrollIndicators(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(AppBackdrop().ignoresSafeArea())
             .navigationBarTitleDisplayMode(.inline)

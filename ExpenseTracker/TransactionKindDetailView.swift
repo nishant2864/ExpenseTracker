@@ -34,11 +34,10 @@ struct TransactionKindDetailView: View {
                 AppBackdrop().ignoresSafeArea()
 
                 ScrollView {
+
                     VStack(spacing: 20) {
-                        // Summary hero card
                         summaryHero
 
-                        // Transactions list
                         if items.isEmpty {
                             emptyState
                         } else {
@@ -49,6 +48,7 @@ struct TransactionKindDetailView: View {
                     .padding(.top, 16)
                     .padding(.bottom, 40)
                 }
+                .scrollIndicators(.hidden)
             }
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.large)

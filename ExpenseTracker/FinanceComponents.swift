@@ -86,7 +86,7 @@ struct GlassCard<Content: View>: View {
     }
 }
 
-// MARK: - ATM Card (replaces BalanceHeroCard)
+// MARK: - ATM Card / Balance Card
 
 struct ATMCardView: View {
     let snapshot: MonthlySnapshot
@@ -94,95 +94,121 @@ struct ATMCardView: View {
     @EnvironmentObject private var store: FinanceStore
 
     @State private var isFlipped = false
-    @State private var generateTapped = false
     @State private var cardAppeared = false
 
     var body: some View {
         VStack(spacing: 10) {
-            // The card itself — 200pt matches ~1.58:1 ratio at full iPhone width
             ZStack {
-                CardFrontFace()
-                    .opacity(isFlipped ? 0 : 1)
-                    .rotation3DEffect(
-                        .degrees(isFlipped ? 180 : 0),
-                        axis: (x: 0, y: 1, z: 0),
-                        perspective: 0.4
-                    )
+                if store.cardGenerated {
+                    CardFrontFace()
+                        .opacity(isFlipped ? 0 : 1)
+                        .rotation3DEffect(
+                            .degrees(isFlipped ? 180 : 0),
+                            axis: (x: 0, y: 1, z: 0),
+                            perspective: 0.4
+                        )
 
-                CardBackFace(snapshot: snapshot)
-                    .opacity(isFlipped ? 1 : 0)
-                    .rotation3DEffect(
-                        .degrees(isFlipped ? 360 : 180),
-                        axis: (x: 0, y: 1, z: 0),
-                        perspective: 0.4
-                    )
+                    CardBackFace(snapshot: snapshot)
+                        .opacity(isFlipped ? 1 : 0)
+                        .rotation3DEffect(
+                            .degrees(isFlipped ? 360 : 180),
+                            axis: (x: 0, y: 1, z: 0),
+                            perspective: 0.4
+                        )
+                } else {
+                    PlaceholderBalanceCard(snapshot: snapshot)
+                }
             }
             .frame(height: 200)
             .scaleEffect(cardAppeared ? 1 : 0.88)
             .opacity(cardAppeared ? 1 : 0)
             .onTapGesture {
                 guard store.cardGenerated else { return }
-                withAnimation(.spring(duration: 0.6, bounce: 0.2)) {
-                    isFlipped.toggle()
-                }
+                withAnimation(.spring(duration: 0.6, bounce: 0.2)) { isFlipped.toggle() }
                 UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             }
             .onAppear {
-                withAnimation(.spring(duration: 0.55, bounce: 0.25).delay(0.1)) {
-                    cardAppeared = true
-                }
+                withAnimation(.spring(duration: 0.55, bounce: 0.25).delay(0.1)) { cardAppeared = true }
             }
 
-            // Hint / generate button
-            if !store.cardGenerated {
-                generateCardButton
-            } else {
+            if store.cardGenerated {
                 HStack(spacing: 5) {
-                    Image(systemName: "hand.tap.fill")
-                        .font(.caption2)
-                    Text("Tap to \(isFlipped ? "see card" : "see balance")")
-                        .font(.caption)
+                    Image(systemName: "hand.tap.fill").font(.caption2)
+                    Text("Tap to \(isFlipped ? "see card" : "see balance")").font(.caption)
                 }
                 .foregroundStyle(.secondary)
                 .transition(.opacity)
+            } else {
+                Text("Generate your card in Profile")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }
+}
 
-    // MARK: - Generate button
-    private var generateCardButton: some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
-            withAnimation(.spring(duration: 0.5, bounce: 0.3)) {
-                store.generateCard()
-                generateTapped = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
-                withAnimation(.spring(duration: 0.6, bounce: 0.2)) {
-                    isFlipped = true
+// MARK: - Placeholder Balance Card (glass, shown before card generated)
+
+struct PlaceholderBalanceCard: View {
+    let snapshot: MonthlySnapshot
+    @EnvironmentObject private var store: FinanceStore
+
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(.white.opacity(0.18), lineWidth: 1)
+
+            VStack(alignment: .leading, spacing: 0) {
+                // Balance
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("AVAILABLE BALANCE")
+                        .font(.system(size: 8, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .kerning(1.4)
+                    Text(store.formattedCurrency(snapshot.balance))
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
+                        .contentTransition(.numericText())
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding([.horizontal, .top], 20)
+
+                Spacer()
+
+                Divider().padding(.horizontal, 20)
+
+                // Income / Expenses
+                HStack(spacing: 0) {
+                    balanceStat(label: "INCOME",
+                                value: store.formattedCurrency(snapshot.income),
+                                tint: Color(hex: "2EC4B6") ?? .green)
+                    Spacer()
+                    Rectangle().fill(.white.opacity(0.2)).frame(width: 1, height: 32)
+                    Spacer()
+                    balanceStat(label: "EXPENSES",
+                                value: store.formattedCurrency(snapshot.expenses),
+                                tint: Color(hex: "FF6B6B") ?? .red,
+                                trailing: true)
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
             }
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: "creditcard.fill")
-                    .font(.body.weight(.semibold))
-                Text("Generate Expense Tracking Card")
-                    .font(.subheadline.weight(.semibold))
-            }
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(
-                LinearGradient(
-                    colors: [Color(hex: "4F8EF7") ?? .blue, Color(hex: "6E44C8") ?? .purple],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                ),
-                in: RoundedRectangle(cornerRadius: 18, style: .continuous)
-            )
-            .shadow(color: (Color(hex: "4F8EF7") ?? .blue).opacity(0.4), radius: 14, y: 6)
         }
-        .buttonStyle(.plain)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .shadow(color: .black.opacity(0.12), radius: 20, y: 8)
+    }
+
+    private func balanceStat(label: String, value: String, tint: Color, trailing: Bool = false) -> some View {
+        VStack(alignment: trailing ? .trailing : .leading, spacing: 3) {
+            Text(label)
+                .font(.system(size: 8, weight: .semibold))
+                .foregroundStyle(.secondary)
+                .kerning(1.2)
+            Text(value)
+                .font(.system(size: 15, weight: .bold, design: .rounded))
+                .foregroundStyle(tint)
+        }
     }
 }
 

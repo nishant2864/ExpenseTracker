@@ -11,10 +11,12 @@ struct HomeView: View {
 
     var body: some View {
         ScrollView {
+
             VStack(alignment: .leading, spacing: 20) {
                 header
+                // Card is always visible — shows glass placeholder until generated
+                ATMCardView(snapshot: store.monthlySnapshot, namespace: namespace)
                 if store.hasTransactions {
-                    ATMCardView(snapshot: store.monthlySnapshot, namespace: namespace)
                     QuickStatsRow(
                         snapshot: store.monthlySnapshot,
                         onIncomeTap: { showingIncome = true },
@@ -33,6 +35,7 @@ struct HomeView: View {
             .padding(.top, 12)
             .padding(.bottom, 40)
         }
+        .scrollIndicators(.hidden)
         .background(AppBackdrop().ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -86,12 +89,10 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Recent section (last 3)
+    // MARK: - Recent section
 
     private var recentSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-
-            // Section header with See all button
             HStack(alignment: .center) {
                 Text("Recent activity")
                     .font(.title3.bold())
