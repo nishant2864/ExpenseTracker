@@ -238,13 +238,13 @@ private struct CardFrontFace: View {
                             .lineSpacing(1)
                     }
                     Spacer()
-                    Text("PLATINUM")
+                    Text("ACTIVE")
                         .font(.system(size: 9, weight: .black, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.75))
+                        .foregroundStyle(.green.opacity(0.75))
                         .kerning(1.8)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(.white.opacity(0.15), in: Capsule())
+                        .background(.green.opacity(0.15), in: Capsule())
                 }
 
                 Spacer() // pushes chip down to natural mid-point
@@ -546,49 +546,65 @@ struct SpendingChartCard: View {
     let formatter: (Double) -> String
 
     var body: some View {
-            VStack(alignment: .leading, spacing: 18) {
-                Text("This month’s spending")
-                    .font(.title3.bold())
+        VStack(alignment: .leading, spacing: 14) {
+            Text("This month’s spending")
+                .font(.title3.bold())
                     .padding(.top, 20)
 
-                if items.isEmpty {
-                    EmptyStateCard(
-                        title: "No spending yet",
-                        subtitle: "Your category graph appears here as soon as you log expenses.",
-                        systemImage: "chart.bar.xaxis"
-                    )
-                } else {
-                    Chart(items, id: \.category) { item in
-                        BarMark(
-                            x: .value("Category", item.category),
-                            y: .value("Amount", item.total)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: item.colors.compactMap(Color.init(hex:)),
-                                startPoint: .top,
-                                endPoint: .bottom
+            if items.isEmpty {
+                EmptyStateCard(
+                    title: "No spending yet",
+                    subtitle: "Your category graph appears here as soon as you log expenses.",
+                    systemImage: "chart.bar.xaxis"
+                )
+            } else {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 24) {
+                        Spacer()
+                        Chart(items, id: \.category) { item in
+                            BarMark(
+                                x: .value("Category", item.category),
+                                y: .value("Amount", item.total)
                             )
-                        )
-                    }
-                    .frame(height: 190)
-                    .chartYAxis {
-                        AxisMarks(position: .leading)
-                    }
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: item.colors.compactMap(Color.init(hex:)),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                        }
+                        .frame(height: 180)
+                        .chartYAxis {
+                            AxisMarks(position: .leading)
+                        }
 
-                    ForEach(items.prefix(3), id: \.category) { item in
-                        HStack {
-                            CategoryIcon(symbol: item.symbol, colors: item.colors)
-                            Text(item.category)
-                            Spacer()
-                            Text(formatter(item.total))
-                                .foregroundStyle(.secondary)
+                        VStack(spacing: 0) {
+                            let topItems = Array(items.prefix(3))
+                            ForEach(0..<topItems.count, id: \.self) { index in
+                                let item = topItems[index]
+                                HStack(spacing: 12) {
+                                    CategoryIcon(symbol: item.symbol, colors: item.colors)
+                                    Text(item.category)
+                                        .font(.body.weight(.medium))
+                                    Spacer()
+                                    Text(formatter(item.total))
+                                        .font(.body.weight(.semibold))
+                                        .foregroundStyle(.secondary)
+                                }
+                                .padding(.vertical, 14)
+                                
+                                if index < topItems.count - 1 {
+                                    Divider().padding(.leading, 44)
+                                }
+                            }
                         }
                     }
                 }
+            }
         }
-                    .padding(.bottom, 30)
+        .padding(.bottom, 30)
     }
 }
 

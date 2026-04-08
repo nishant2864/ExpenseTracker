@@ -768,12 +768,12 @@ struct CardSetupStepView: View {
                             .foregroundStyle(.white.opacity(0.9))
                     }
                     Spacer()
-                    Text("PLATINUM")
+                    Text("ACTIVE")
                         .font(.system(size: 8, weight: .black, design: .rounded))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.green.opacity(0.7))
                         .kerning(1.5)
                         .padding(.horizontal, 7).padding(.vertical, 3)
-                        .background(.white.opacity(0.15), in: Capsule())
+                        .background(.green.opacity(0.15), in: Capsule())
                 }
                 Spacer()
                 // Chip

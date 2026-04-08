@@ -4,6 +4,7 @@ struct ProfileView: View {
     @EnvironmentObject private var store: FinanceStore
     @State private var showingEditProfile = false
     @State private var showDestroyConfirmation = false
+    @State private var showingCardInfo = false
 
     var body: some View {
         ScrollView {
@@ -48,6 +49,11 @@ struct ProfileView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This will permanently delete your ExpenseTracker card. You can generate a new one anytime.")
+        }
+        .alert("About ExpenseTracker Card", isPresented: $showingCardInfo) {
+            Button("Got it", role: .cancel) { }
+        } message: {
+            Text("This is a virtual tracking card used within the app only. It has no connection to any bank, payment network, or financial institution. It is not a real credit or debit card.")
         }
     }
 
@@ -154,9 +160,20 @@ struct ProfileView: View {
                             .foregroundStyle(Color.accentColor)
                     }
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Card")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 4) {
+                            Text("Card")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            
+                            Button {
+                                showingCardInfo = true
+                            } label: {
+                                Image(systemName: "info.circle")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
                         Text("•••• •••• •••• \(store.cardLast4)")
                             .font(.subheadline.weight(.medium))
                             .fontDesign(.monospaced)
@@ -212,9 +229,20 @@ struct ProfileView: View {
                                 .foregroundStyle(Color.accentColor)
                         }
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Card")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                            HStack(spacing: 4) {
+                                Text("Card")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                
+                                Button {
+                                    showingCardInfo = true
+                                } label: {
+                                    Image(systemName: "info.circle")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                .buttonStyle(.plain)
+                            }
                             Text("Generate ExpenseTracker Card")
                                 .font(.subheadline.weight(.medium))
                         }
