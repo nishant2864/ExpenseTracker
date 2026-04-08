@@ -13,13 +13,85 @@ final class FinanceStore: ObservableObject {
     @Published var selectedMonth: Date = .now
     @Published var appearance: AppAppearance = .system
 
+    // User profile
+    @Published var userFirstName: String = ""
+    @Published var userLastName: String = ""
+    @Published var userEmail: String = ""
+    @Published var userPhone: String = ""
+
+    // Onboarding state
+    @Published var hasCompletedOnboarding: Bool = false
+    @Published var showingFirstTransactionSheet: Bool = false
+
+    // Card
+    @Published var cardNumber: String = ""
+    @Published var cardGenerated: Bool = false
+
     private let storageURL: URL
     private let appearanceKey = "finance.app.appearance"
+    private let onboardingKey = "finance.app.onboardingDone"
+    private let userNameKey = "finance.app.userName"
+    private let userContactKey = "finance.app.userContact"
+    private let cardKey = "finance.app.card"
 
     init() {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first ?? URL.documentsDirectory
         storageURL = documentsURL.appendingPathComponent("transactions.json")
         load()
+    }
+
+    // MARK: - User Profile
+
+    var userDisplayName: String {
+        let full = [userFirstName, userLastName].filter { !$0.isEmpty }.joined(separator: " ")
+        return full.isEmpty ? "Friend" : full
+    }
+
+    func saveUserName(first: String, last: String) {
+        userFirstName = first
+        userLastName = last
+        var dict = UserDefaults.standard.dictionary(forKey: userNameKey) ?? [:]
+        dict["first"] = first
+        dict["last"] = last
+        UserDefaults.standard.set(dict, forKey: userNameKey)
+    }
+
+    func saveContactInfo(email: String, phone: String) {
+        userEmail = email
+        userPhone = phone
+        var dict = UserDefaults.standard.dictionary(forKey: userContactKey) ?? [:]
+        dict["email"] = email
+        dict["phone"] = phone
+        UserDefaults.standard.set(dict, forKey: userContactKey)
+    }
+
+    func completeOnboarding() {
+        hasCompletedOnboarding = true
+        UserDefaults.standard.set(true, forKey: onboardingKey)
+    }
+
+    func generateCard() {
+        guard !cardGenerated else { return }
+        // Generate a random 16-digit card number grouped in 4
+        let digits = (0..<16).map { _ in String(Int.random(in: 0...9)) }.joined()
+        let groups = stride(from: 0, to: 16, by: 4).map {
+            String(digits[digits.index(digits.startIndex, offsetBy: $0)..<digits.index(digits.startIndex, offsetBy: $0 + 4)])
+        }
+        cardNumber = groups.joined(separator: " ")
+        cardGenerated = true
+        var dict: [String: Any] = ["number": cardNumber, "generated": true]
+        UserDefaults.standard.set(dict, forKey: cardKey)
+    }
+
+    /// Last 4 digits of the card number
+    var cardLast4: String {
+        cardGenerated ? String(cardNumber.replacingOccurrences(of: " ", with: "").suffix(4)) : "••••"
+    }
+
+    /// Card expiry — 3 years from account creation, stored as month/year
+    var cardExpiry: String {
+        let target = Calendar.current.date(byAdding: .year, value: 3, to: .now) ?? .now
+        return target.formatted(.dateTime.month(.twoDigits).year(.twoDigits))
     }
 
     var categories: [FinanceCategory] {
@@ -106,6 +178,21 @@ final class FinanceStore: ObservableObject {
         if let rawAppearance = UserDefaults.standard.string(forKey: appearanceKey),
            let appearance = AppAppearance(rawValue: rawAppearance) {
             self.appearance = appearance
+        }
+
+        hasCompletedOnboarding = UserDefaults.standard.bool(forKey: onboardingKey)
+
+        if let nameDict = UserDefaults.standard.dictionary(forKey: userNameKey) {
+            userFirstName = nameDict["first"] as? String ?? ""
+            userLastName = nameDict["last"] as? String ?? ""
+        }
+        if let contactDict = UserDefaults.standard.dictionary(forKey: userContactKey) {
+            userEmail = contactDict["email"] as? String ?? ""
+            userPhone = contactDict["phone"] as? String ?? ""
+        }
+        if let cardDict = UserDefaults.standard.dictionary(forKey: cardKey) {
+            cardNumber = cardDict["number"] as? String ?? ""
+            cardGenerated = cardDict["generated"] as? Bool ?? false
         }
 
         let decoder = JSONDecoder()

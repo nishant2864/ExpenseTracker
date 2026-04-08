@@ -4,6 +4,8 @@ struct AddTransactionView: View {
     @EnvironmentObject private var store: FinanceStore
     @Environment(\.dismiss) private var dismiss
 
+    var onSaveComplete: (() -> Void)? = nil
+
     @State private var kind: TransactionKind = .expense
     @State private var amount = ""
     @State private var selectedCategory = FinanceCategory.defaults[0]
@@ -130,6 +132,7 @@ struct AddTransactionView: View {
                 store.addTransaction(transaction)
             }
             dismiss()
+            onSaveComplete?()
         } label: {
             Text("Save transaction")
                 .font(.headline)

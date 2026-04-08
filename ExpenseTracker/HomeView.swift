@@ -10,7 +10,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
                 if store.hasTransactions {
-                    BalanceHeroCard(snapshot: store.monthlySnapshot, namespace: namespace)
+                    ATMCardView(snapshot: store.monthlySnapshot, namespace: namespace)
                     QuickStatsRow(snapshot: store.monthlySnapshot)
                     SpendingChartCard(items: store.monthlyTotalsByCategory(kind: .expense), formatter: store.formattedCurrency)
                     recentSection
@@ -25,10 +25,19 @@ struct HomeView: View {
         .background(AppBackdrop().ignoresSafeArea())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                MonthPicker(
+                    selectedMonth: Binding(
+                        get: { store.selectedMonth },
+                        set: { store.selectedMonth = $0 }
+                    )
+                )
+            }
+            
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink(destination: ProfileView()) {
                     Image(systemName: "person.crop.circle")
-                        .font(.title2)
+                        .font(.title3)
                         .foregroundStyle(.primary)
                 }
             }
@@ -38,21 +47,19 @@ struct HomeView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(greeting)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("\(greeting),")
                         .font(.system(.largeTitle, weight: .bold))
-                    Text("Your money is organized for \(store.selectedMonth.formatted(.dateTime.month(.wide)))")
+                    Text("\(store.userDisplayName)")
+                        .font(.system(.largeTitle, weight: .bold))
+                    
+                    Spacer()
+                    
+                    Text("Your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))")
                         .foregroundStyle(.secondary)
                 }
 
                 Spacer()
-
-                MonthPicker(
-                    selectedMonth: Binding(
-                        get: { store.selectedMonth },
-                        set: { store.selectedMonth = $0 }
-                    )
-                )
             }
             .contentTransition(.numericText())
         }
@@ -79,10 +86,18 @@ struct HomeView: View {
 
     private var greeting: String {
         let hour = Calendar.current.component(.hour, from: .now)
-        return switch hour {
+        let timeGreeting = switch hour {
         case 5..<12: "Good Morning"
         case 12..<17: "Good Afternoon"
         default: "Good Evening"
         }
+        return timeGreeting
+    }
+
+    private var greetingSubtitle: String {
+        let name = store.userDisplayName
+        return name == "Friend"
+            ? "Your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))"
+            : "Hi \(name), your money is organised for \(store.selectedMonth.formatted(.dateTime.month(.wide)))"
     }
 }
