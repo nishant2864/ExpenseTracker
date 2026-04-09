@@ -76,7 +76,7 @@ struct LaunchScreenView: View {
 
                 // App name
                 VStack(spacing: 8) {
-                    Text("ExpenseTracker")
+                    Text("Expense Dairy")
                         .font(.system(size: 34, weight: .bold))
                         .foregroundStyle(.white)
                         .opacity(opacity)
